@@ -34,14 +34,7 @@
     /* ── Header ── */
     header { margin-bottom: 3.5rem; }
 
-    header h1 {
-      font-size: 1.25rem;
-      font-weight: normal;
-      letter-spacing: 0.12em;
-      text-transform: lowercase;
-      color: var(--accent);
-      margin-bottom: 1.2rem;
-    }
+    header h1 { margin-bottom: 1.2rem; }
 
     header p {
       font-size: 0.95rem;
@@ -65,12 +58,15 @@
       margin-bottom: 1.5rem;
     }
 
+    /* Shared heading style for songs/albums rows */
+    .songs-heading-row h1,
     .albums-heading-row h2 {
-      font-size: 0.85rem;
+      font-size: 1.25rem;
       font-weight: normal;
       letter-spacing: 0.12em;
       text-transform: lowercase;
-      color: var(--muted);
+      color: var(--accent);
+      min-width: 5.5rem;
     }
 
     .lang-filter {
@@ -94,6 +90,49 @@
 
     .lang-filter-btn:hover { color: var(--text); border-color: #555; }
     .lang-filter-btn.active { color: var(--accent); border-color: var(--accent); }
+
+    /* ── Album strip ── */
+    .album-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .album-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      text-align: center;
+    }
+
+    .album-card-cover {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      display: block;
+    }
+
+    .album-card-cover--placeholder {
+      background: var(--surface);
+    }
+
+    .album-card-name {
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .album-card-year {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
 
     /* ── Song list ── */
     .songs { list-style: none; }
@@ -405,10 +444,26 @@
       <h2>albums</h2>
       <div class="album-filter" id="album-filter">
         <button class="lang-filter-btn active" data-album="all">all</button>
+        <button class="lang-filter-btn" data-album="kukla-masha">Кукла Маша · 2016</button>
         <button class="lang-filter-btn" data-album="the-silence">Тишина · 2026</button>
       </div>
     </div>
     <!-- albums:end -->
+
+    <!-- album-cards:start -->
+    <div class="album-strip">
+      <button class="album-card" data-album="kukla-masha">
+        <img src="albums/%D0%9A%D1%83%D0%BA%D0%BB%D0%B0%20%D0%9C%D0%B0%D1%88%D0%B0/cover.png" class="album-card-cover" alt="Кукла Маша">
+        <div class="album-card-name">Кукла Маша</div>
+        <div class="album-card-year">2016</div>
+      </button>
+      <button class="album-card" data-album="the-silence">
+        <img src="albums/%D0%A2%D0%B8%D1%88%D0%B8%D0%BD%D0%B0/cover.png" class="album-card-cover" alt="Тишина">
+        <div class="album-card-name">Тишина</div>
+        <div class="album-card-year">2026</div>
+      </button>
+    </div>
+    <!-- album-cards:end -->
 
     <ul class="songs" id="song-list">
       <!-- songs:start -->
@@ -468,6 +523,42 @@ Wrap yourself in a warm cozy blanket,
 Take care of yourself, do you hear?...</pre></div>
         </details>
       </li>
+      <li data-lang="ru" data-default="true" data-album-id="kukla-masha">
+        <details class="song-details">
+          <summary class="song-row">
+            <span class="song-title">Кукла Маша</span>
+            <div class="song-actions"><a class="icon-btn lang-btn" href="pdf/Кукла Маша/ru.pdf" target="_blank" rel="noopener" data-tooltip="Sheet music PDF (ru)">chords ru</a><a class="icon-btn play-btn" href="https://soundcloud.com/sergiorykov/kukla-masha" target="_blank" rel="noopener" data-tooltip="Listen on SoundCloud"><svg width="32" height="32" viewBox="0 0 43 43" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="scg____________ru" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ff5500" stop-opacity="1"/><stop offset="100%" stop-color="#ff2200" stop-opacity="1"/></linearGradient></defs><circle fill="url(#scg____________ru)" stroke="#cc4400" cx="21.5" cy="21.5" r="21"/><path fill="#fff" d="M31,21.5L17,33l2.5-11.5L17,10L31,21.5z"/></svg></a></div>
+          </summary>
+        <div class="lyrics"><iframe class="sc-embed" src="pages/%D0%9A%D1%83%D0%BA%D0%BB%D0%B0%20%D0%9C%D0%B0%D1%88%D0%B0/ru.html" width="100%" height="166" scrolling="no" frameborder="no" loading="lazy"></iframe><div class="lyrics-credits">Lyrics: <a href="https://soundcloud.com/sergiorykov/" target="_blank" rel="noopener">Сергей Рыков</a>  ·  Music: <a href="https://soundcloud.com/sergiorykov/" target="_blank" rel="noopener">Сергей Рыков</a> · 01.07.2016</div>
+        <pre>Так бывает, обещает и уходит в никуда.
+Растворится, словно птица, и растает без следа.
+Белым облаком приснится, ручейком сойдя с небес,
+Убежит вслед за жар-птицей эфемерных ждать чудес.
+
+Только вот незадача —
+Кукла Маша всё плачет,
+И бросается в омут
+Новых чувств плен.
+Оставляя повсюду
+Только пепел надежд.
+Пробегая по кругу
+И забыв кто мы есть.
+
+Сколько можно осторожно выбирать слов переплёт,
+Опасаться растревожить хрупкий мир вокруг неё.
+Забывая всё на свете вновь спешу за нею вслед.
+Жёлтой дымки шлейф стелится исчезая вдалеке.
+
+Только вот незадача —
+Кукла Маша всё плачет,
+И бросается в омут
+Новых чувств плен.
+Оставляя повсюду
+Только пепел надежд.
+Пробегая по кругу
+И забыв кто мы есть.</pre></div>
+        </details>
+      </li>
       <!-- songs:end -->
     </ul>
 
@@ -516,6 +607,10 @@ Take care of yourself, do you hear?...</pre></div>
             btn.classList.toggle('active', btn.dataset.album === currentAlbum);
           });
         }
+        // Hide album cards that don't match the selected album
+        document.querySelectorAll('.album-card[data-album]').forEach(card => {
+          card.style.display = (currentAlbum === 'all' || card.dataset.album === currentAlbum) ? '' : 'none';
+        });
       }
 
       // Build lang filter buttons dynamically from song data
@@ -534,6 +629,14 @@ Take care of yourself, do you hear?...</pre></div>
           btn.addEventListener('click', () => { currentAlbum = btn.dataset.album; applyFilters(); });
         });
       }
+
+      // Wire album card buttons — clicking a card filters by that album
+      document.querySelectorAll('.album-card[data-album]').forEach(card => {
+        card.addEventListener('click', () => {
+          currentAlbum = card.dataset.album;
+          applyFilters();
+        });
+      });
     })();
   </script>
 </body>

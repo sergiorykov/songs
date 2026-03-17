@@ -165,6 +165,7 @@ def load_albums() -> list[dict]:
             "id":     _str(block, "id"),
             "album":  _str(block, "album"),
             "year":   _str(block, "album-year"),
+            "cover":  _str(block, "cover-image"),
             "folder": folder.name,
         })
     return result
@@ -311,6 +312,31 @@ def _albums_block_html(albums: list[dict]) -> str:
     )
 
 
+def _album_cards_html(albums: list[dict]) -> str:
+    """Render horizontal album card strip for the album-cards section."""
+    cards = []
+    for a in albums:
+        cover = a.get("cover")
+        if cover:
+            img = (
+                f'<img src="albums/{quote(a["folder"])}/{cover}"'
+                f' class="album-card-cover" alt="{a["album"]}">'
+            )
+        else:
+            img = '<div class="album-card-cover album-card-cover--placeholder"></div>'
+        name = a["album"] or ""
+        year = a["year"] or ""
+        cards.append(
+            f'      <button class="album-card" data-album="{a["id"]}">\n'
+            f'        {img}\n'
+            f'        <div class="album-card-name">{name}</div>\n'
+            f'        <div class="album-card-year">{year}</div>\n'
+            f'      </button>'
+        )
+    inner = "\n".join(cards)
+    return f'    <div class="album-strip">\n{inner}\n    </div>'
+
+
 def update_html(songs: list[tuple[str, dict]], albums: list[dict] | None = None) -> bool:
     text  = INDEX_HTML.read_text(encoding="utf-8")
 
@@ -329,13 +355,22 @@ def update_html(songs: list[tuple[str, dict]], albums: list[dict] | None = None)
         flags=re.DOTALL,
     )
 
-    # Update albums filter block
+    # Update albums filter block and album cards
     if albums is not None:
         albums_inner = _albums_block_html(albums)
         new_albums   = f"    <!-- albums:start -->\n{albums_inner}\n    <!-- albums:end -->"
         updated = re.sub(
             r"    <!-- albums:start -->.*?    <!-- albums:end -->",
             new_albums,
+            updated,
+            flags=re.DOTALL,
+        )
+
+        cards_inner = _album_cards_html(albums)
+        new_cards   = f"    <!-- album-cards:start -->\n{cards_inner}\n    <!-- album-cards:end -->"
+        updated = re.sub(
+            r"    <!-- album-cards:start -->.*?    <!-- album-cards:end -->",
+            new_cards,
             updated,
             flags=re.DOTALL,
         )
