@@ -149,7 +149,7 @@ def render_html_variant(folder: str, lang: str, meta: dict, variants: dict) -> s
         f'<a class="icon-btn lang-btn"'
         f' href="{pdf_href}"'
         f' target="_blank" rel="noopener"'
-        f' data-tooltip="Sheet music PDF ({lang})">{lang}</a>'
+        f' data-tooltip="Sheet music PDF ({lang})">chords {lang}</a>'
     )
 
     # Subtext for non-default variants: find the default title
