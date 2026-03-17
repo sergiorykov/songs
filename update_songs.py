@@ -79,6 +79,7 @@ def parse_variant_block(block: str) -> dict:
         "title":             _str(block, "title"),
         "default":           _bool(block, "default"),
         "soundcloud":        _str(block, "soundcloud"),
+        "soundcloud-embed":  _str(block, "soundcloud-embed"),
         "lyrics-author":     _str(block, "lyrics-author"),
         "lyrics-author-url": _str(block, "lyrics-author-url"),
         "music-author":      _str(block, "music-author"),
@@ -118,6 +119,28 @@ def load_songs() -> list[tuple[str, dict]]:
             if variants:
                 result.append((d.name, variants))
     return result
+
+
+# ── SoundCloud embed pages ────────────────────────────────────────────────────
+
+SC_DIR = ROOT / "sc"
+
+def write_sc_embed(folder: str, lang: str, embed_url: str) -> Path:
+    """Write sc/folder/lang.html containing just the SoundCloud player iframe."""
+    out_dir  = SC_DIR / folder
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_file = out_dir / f"{lang}.html"
+    out_file.write_text(
+        "<!DOCTYPE html>\n"
+        "<html><head><meta charset=\"UTF-8\">"
+        "<style>*{margin:0;padding:0}body{background:#0d0d0d}</style></head>\n"
+        "<body>"
+        f'<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"'
+        f' src="{embed_url}"></iframe>'
+        "</body></html>\n",
+        encoding="utf-8",
+    )
+    return out_file
 
 
 # ── index.html ────────────────────────────────────────────────────────────────
@@ -172,17 +195,16 @@ def render_html_variant(folder: str, lang: str, meta: dict, variants: dict) -> s
             f"{SVG_PLAY}{SVG_SC}</a>"
         )
 
-    # SoundCloud embed widget
+    # SoundCloud embed widget (only when explicit embed URL is provided)
+    sc_embed_url = meta.get("soundcloud-embed")
     sc_embed = ""
-    if sc:
-        sc_url = quote(sc, safe="")
+    if sc_embed_url:
+        write_sc_embed(folder, lang, sc_embed_url)
+        sc_page  = f"sc/{quote(folder)}/{lang}.html"
         sc_embed = (
-            f'<iframe class="sc-embed" width="100%" height="60" scrolling="no" frameborder="no"'
-            f' allow="autoplay"'
-            f' src="https://w.soundcloud.com/player/?url={sc_url}'
-            f'&color=%23ff5500&auto_play=false&hide_related=true'
-            f'&show_comments=false&show_user=true&show_reposts=false&show_teaser=false">'
-            f'</iframe>'
+            f'<iframe class="sc-embed" src="{sc_page}"'
+            f' width="100%" height="166" scrolling="no" frameborder="no"'
+            f' loading="lazy"></iframe>'
         )
 
     # Lyrics panel
