@@ -17,6 +17,7 @@
   lyrics-sources: (),   // array of ("Label", "url") pairs
   // Music credits
   music-author: author,
+  music-author-url: none,
   music-date: none,
   body,
 ) = {
@@ -60,7 +61,7 @@
     image(cover-image, width: cover-size, height: cover-size, fit: "cover"),
     block(inset: (top: 0pt))[
       #text(size: 17pt, weight: "bold", title)
-      #v(0.25cm)
+      #v(0.1cm)
       #set text(size: 8pt, fill: luma(130), style: "italic")
       #if lyrics-author != none [
         Стихи: #if lyrics-author-url != none [
@@ -70,7 +71,11 @@
         ]#if lyrics-date != none [ · #lyrics-date]#for s in lyrics-sources [ · #link(s.at(1))[#s.at(0)]]
         \
       ]
-      Музыка: #music-author#if music-date != none [ · #music-date]
+      Музыка: #if music-author-url != none [
+        #link(music-author-url)[#music-author]
+      ] else [
+        #music-author
+      ]#if music-date != none [ · #music-date]
     ],
   )
 
