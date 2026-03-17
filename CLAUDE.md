@@ -70,6 +70,8 @@ Before every commit, run `git status` and review **both** what you changed and w
 
 If it is unclear what the user changed or why, **ask before committing** rather than guessing or silently skipping their files.
 
+You may commit changes atomically at any time. **Never `git push`** — only push when the user explicitly says "отправляй".
+
 ## Scripts
 
 - All scripts are written in **Python** (not PowerShell or Bash)
