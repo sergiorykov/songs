@@ -26,50 +26,109 @@ SVG_SC = (
     "</svg>"
 )
 
+# Matches a line that consists only of chord tokens (e.g. "F Em Am \")
+_CHORD_TOKEN = re.compile(
+    r'^[A-G][#b]?(?:m(?:aj7|in7)?|7|dim7?|aug|sus[24]|add9)?(?:/[A-G][#b]?)?(?:\([^)]+\))?$'
+    r'|^\([^)]+\)$'
+)
+
+
+def _is_chord_line(line: str) -> bool:
+    tokens = line.rstrip("\\").split()
+    return bool(tokens) and all(_CHORD_TOKEN.match(t) for t in tokens)
+
+
+def extract_lyrics(path: Path) -> str:
+    """Return song lyrics as plain text, stripping chords and typst markup."""
+    text = path.read_text(encoding="utf-8")
+    # Everything after the closing ) of song-template.with(...)
+    match = re.search(r'^\)\s*$', text, re.MULTILINE)
+    if not match:
+        return ""
+    body = text[match.end():]
+
+    lines = []
+    for line in body.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            lines.append("")
+            continue
+        if _is_chord_line(stripped):
+            continue
+        lines.append(stripped.rstrip("\\").rstrip())
+
+    result = "\n".join(lines).strip()
+    return re.sub(r"\n{3,}", "\n\n", result)
+
 
 def parse_song(path: Path) -> dict:
-    """Extract title and optional soundcloud URL from a .typ file."""
+    """Extract metadata and lyrics from a .typ file."""
     text = path.read_text(encoding="utf-8")
     title = re.search(r'title:\s*"([^"]+)"', text)
     sc    = re.search(r'soundcloud:\s*"([^"]+)"', text)
+    lang  = re.search(r'language:\s*"([^"]+)"', text)
     return {
         "title":      title.group(1) if title else path.stem,
-        "soundcloud": sc.group(1) if sc else None,
+        "soundcloud": sc.group(1)    if sc    else None,
+        "language":   lang.group(1)  if lang  else "en",
+        "lyrics":     extract_lyrics(path),
     }
 
 
 def load_songs() -> list[dict]:
-    songs = [parse_song(p) for p in sorted(SONGS_DIR.glob("*.typ"))]
-    return songs
+    return [parse_song(p) for p in sorted(SONGS_DIR.glob("*.typ"))]
 
 
 # ── index.html ────────────────────────────────────────────────────────────────
 
 def render_html_item(song: dict) -> str:
-    title = song["title"]
-    sc    = song["soundcloud"]
-    pdf_href = f'pdf/{title}.pdf'
+    title  = song["title"]
+    sc     = song["soundcloud"]
+    lang   = song["language"]
+    lyrics = song["lyrics"]
+    pdf_href = f"pdf/{title}.pdf"
 
     sc_btn = ""
     if sc:
         sc_btn = (
-            f'\n          <div class="song-actions">'
-            f'\n            <a class="icon-btn sc-btn"'
-            f'\n               href="{sc}"'
-            f'\n               target="_blank" rel="noopener"'
-            f'\n               data-tooltip="Listen on SoundCloud">'
-            f"\n              {SVG_PLAY}"
-            f"\n              {SVG_SC}"
-            f"\n            </a>"
-            f"\n          </div>"
+            f'<a class="icon-btn sc-btn"'
+            f' href="{sc}"'
+            f' target="_blank" rel="noopener"'
+            f' data-tooltip="Listen on SoundCloud">'
+            f"{SVG_PLAY}{SVG_SC}</a>"
+        )
+
+    pdf_btn = (
+        f'<a class="icon-btn lang-btn"'
+        f' href="{pdf_href}"'
+        f' target="_blank" rel="noopener"'
+        f' data-tooltip="Sheet music PDF">{lang}</a>'
+    )
+
+    lyrics_escaped = (
+        lyrics
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+    )
+
+    lyrics_block = ""
+    if lyrics_escaped:
+        lyrics_block = (
+            f'\n        <div class="lyrics">'
+            f'<pre>{lyrics_escaped}</pre>'
+            f"</div>"
         )
 
     return (
         f"      <li>\n"
-        f'        <div class="song-row">\n'
-        f'          <a class="song-title-link" href="{pdf_href}" target="_blank">{title}</a>'
-        f"{sc_btn}\n"
-        f"        </div>\n"
+        f'        <details class="song-details">\n'
+        f'          <summary class="song-row">\n'
+        f'            <span class="song-title">{title}</span>\n'
+        f'            <div class="song-actions">{sc_btn}{pdf_btn}</div>\n'
+        f"          </summary>"
+        f"{lyrics_block}\n"
+        f"        </details>\n"
         f"      </li>"
     )
 
