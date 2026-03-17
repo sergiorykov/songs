@@ -123,10 +123,10 @@ def load_songs() -> list[tuple[str, dict]]:
 
 # ── SoundCloud embed pages ────────────────────────────────────────────────────
 
-SC_DIR = ROOT / "sc"
+SC_DIR = ROOT / "pages"
 
 def write_sc_embed(folder: str, lang: str, embed_url: str) -> Path:
-    """Write sc/folder/lang.html containing just the SoundCloud player iframe."""
+    """Write pages/folder/lang.html containing just the SoundCloud player iframe."""
     out_dir  = SC_DIR / folder
     out_dir.mkdir(parents=True, exist_ok=True)
     out_file = out_dir / f"{lang}.html"
@@ -201,7 +201,7 @@ def render_html_variant(folder: str, lang: str, meta: dict, variants: dict) -> s
     sc_embed = ""
     if sc_embed_url:
         write_sc_embed(folder, lang, sc_embed_url)
-        sc_page  = f"sc/{quote(folder)}/{lang}.html"
+        sc_page  = f"pages/{quote(folder)}/{lang}.html"
         sc_embed = (
             f'<iframe class="sc-embed" src="{sc_page}"'
             f' width="100%" height="166" scrolling="no" frameborder="no"'
