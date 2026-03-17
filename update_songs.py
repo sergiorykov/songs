@@ -61,17 +61,23 @@ def extract_lyrics(path: Path) -> str:
     return re.sub(r"\n{3,}", "\n\n", result)
 
 
+def _str(text: str, key: str) -> str | None:
+    m = re.search(rf'{key}:\s*"([^"]+)"', text)
+    return m.group(1) if m else None
+
+
 def parse_song(path: Path) -> dict:
     """Extract metadata and lyrics from a .typ file."""
     text = path.read_text(encoding="utf-8")
-    title = re.search(r'title:\s*"([^"]+)"', text)
-    sc    = re.search(r'soundcloud:\s*"([^"]+)"', text)
-    lang  = re.search(r'language:\s*"([^"]+)"', text)
     return {
-        "title":      title.group(1) if title else path.stem,
-        "soundcloud": sc.group(1)    if sc    else None,
-        "language":   lang.group(1)  if lang  else "en",
-        "lyrics":     extract_lyrics(path),
+        "title":            _str(text, "title")          or path.stem,
+        "soundcloud":       _str(text, "soundcloud"),
+        "language":         _str(text, "language")       or "en",
+        "lyrics-author":    _str(text, "lyrics-author"),
+        "lyrics-author-url":_str(text, "lyrics-author-url"),
+        "music-author":     _str(text, "music-author"),
+        "music-date":       _str(text, "music-date"),
+        "lyrics":           extract_lyrics(path),
     }
 
 
@@ -112,10 +118,26 @@ def render_html_item(song: dict) -> str:
         .replace(">", "&gt;")
     )
 
+    credits = ""
+    la  = song.get("lyrics-author")
+    lau = song.get("lyrics-author-url")
+    ma  = song.get("music-author")
+    md  = song.get("music-date")
+    if la:
+        author_link = f'<a href="{lau}" target="_blank" rel="noopener">{la}</a>' if lau else la
+        credits += f"Lyrics: {author_link}"
+    if ma:
+        line = f"Music: {ma}"
+        if md:
+            line += f" · {md}"
+        credits += ("  ·  " if credits else "") + line
+    credits_html = f'<div class="lyrics-credits">{credits}</div>\n        ' if credits else ""
+
     lyrics_block = ""
-    if lyrics_escaped:
+    if lyrics_escaped or credits:
         lyrics_block = (
             f'\n        <div class="lyrics">'
+            f"{credits_html}"
             f'<pre>{lyrics_escaped}</pre>'
             f"</div>"
         )

@@ -9,6 +9,15 @@
   cover-image: none,
   capo: none,
   soundcloud: none,
+  language: "en",
+  // Lyrics credits
+  lyrics-author: none,
+  lyrics-author-url: none,
+  lyrics-date: none,
+  lyrics-sources: (),   // array of ("Label", "url") pairs
+  // Music credits
+  music-author: author,
+  music-date: none,
   body,
 ) = {
   set page(
@@ -16,7 +25,7 @@
     margin: (x: 1.2cm, y: 1cm),
   )
 
-  set text(font: main-font, size: 11pt, fill: text-color)
+  set text(font: main-font, size: 11pt, fill: text-color, lang: language)
   set par(leading: 0.55em, spacing: 1em)
 
   // Подсветка аккордов через show rule (работает по всему документу)
@@ -57,7 +66,25 @@
     ],
   )
 
-  v(0.5cm)
+  v(0.4cm)
+
+  // ── Авторство ──────────────────────────────────────────────────
+  block(inset: (bottom: 0.4cm))[
+    #set text(size: 9pt, fill: luma(130), style: "italic")
+    #if lyrics-author != none {
+      [Стихи: ]
+      if lyrics-author-url != none {
+        link(lyrics-author-url)[#lyrics-author]
+      } else {
+        [#lyrics-author]
+      }
+      if lyrics-date != none { [ · #lyrics-date] }
+      for s in lyrics-sources { [ · #link(s.at(1))[#s.at(0)]] }
+      linebreak()
+    }
+    [Музыка: #music-author]
+    if music-date != none { [ · #music-date] }
+  ]
 
   // ── Текст песни ────────────────────────────────────────────────
   body
