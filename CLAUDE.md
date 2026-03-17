@@ -1,3 +1,18 @@
+# Session Start
+
+At the beginning of every new conversation, print this block immediately:
+
+```
+Available commands:
+  publish <song>   compile a song to PDF  (or run publish.py for interactive picker)
+  new song         create a new song: .typ file, cover image slot, index.html entry
+  new skill        scaffold a new Claude skill for this project
+  deploy           push changes and trigger GitHub Pages rebuild
+  site             show the GitHub Pages URL
+```
+
+---
+
 # Claude Role
 
 ## Music Expert
