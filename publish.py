@@ -31,10 +31,11 @@ def c(text: str, *codes: str) -> str:
 
 
 # ── Interactive selector ───────────────────────────────────────────────────────
-HIDE_CURSOR = "\033[?25l"
-SHOW_CURSOR = "\033[?25h"
-
-_HEADER_LINES = 2
+HIDE_CURSOR   = "\033[?25l"
+SHOW_CURSOR   = "\033[?25h"
+ALT_ON        = "\033[?1049h"   # switch to alternate screen buffer (no scroll)
+ALT_OFF       = "\033[?1049l"   # restore main screen buffer
+HOME          = "\033[H"        # cursor to top-left of screen
 
 
 def _lang_tabs(options: list[str], sel_idx: int, active_row: bool) -> str:
@@ -59,15 +60,13 @@ def _draw_list(songs: list[dict], selected: int, lang_sels: list[int]) -> None:
             rows.append(f"  {c('❯ ', BOLD, CYAN)}{c(song['title'], BOLD, WHITE)}{tabs}")
         else:
             rows.append(c(f"    {song['title']}", DIM) + tabs)
-    # No trailing newline — keeps cursor on last line, prevents terminal scroll
-    sys.stdout.write("\n".join(rows))
+    # \033[K clears to end of line after each row so stale chars don't bleed through
+    sys.stdout.write("\033[K\n".join(rows) + "\033[K")
     sys.stdout.flush()
 
 
 def _redraw(songs: list[dict], idx: int, lang_sels: list[int]) -> None:
-    # \r to column 0, then up (lines-1) rows to reach the first line
-    lines = _HEADER_LINES + len(songs)
-    sys.stdout.write(f"\r\033[{lines - 1}A")
+    sys.stdout.write(HOME)
     _draw_list(songs, idx, lang_sels)
 
 
@@ -113,7 +112,12 @@ def pick_song(songs: list[dict]) -> tuple[str, str] | None:
     idx       = 0
     lang_sels = [0] * len(songs)   # every song starts at "all"
 
-    sys.stdout.write(HIDE_CURSOR)
+    def _exit(restore: bool = True) -> None:
+        if restore:
+            sys.stdout.write(ALT_OFF + SHOW_CURSOR)
+        sys.stdout.flush()
+
+    sys.stdout.write(ALT_ON + HIDE_CURSOR + HOME)
     _draw_list(songs, idx, lang_sels)
 
     try:
@@ -134,17 +138,17 @@ def pick_song(songs: list[dict]) -> tuple[str, str] | None:
                 lang_sels[idx] = (lang_sels[idx] + 1) % n
                 _redraw(songs, idx, lang_sels)
             elif key == "enter":
-                sys.stdout.write("\n" + SHOW_CURSOR)
+                _exit()
                 options = ["all"] + songs[idx]["langs"]
                 return songs[idx]["folder"], options[lang_sels[idx]]
             elif key == "quit":
-                sys.stdout.write("\n" + SHOW_CURSOR)
+                _exit()
                 return None
     except Exception:
-        sys.stdout.write("\n" + SHOW_CURSOR)
+        _exit()
         raise
 
-    sys.stdout.write("\n" + SHOW_CURSOR)
+    _exit()
     return None
 
 
