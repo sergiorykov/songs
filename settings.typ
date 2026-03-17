@@ -1,19 +1,19 @@
-// Общие данные, которые не меняются от песни к песне
+// Global settings shared across all songs
 
 #let author = "Sergio Rykov"
-#let author-photo = "images/author-photo.jpg"  // Квадратное фото автора
+#let author-photo = "images/author-photo.jpg"  // square author photo
 #let album = "Тишина"
 #let album-year = "2026"
 
-// Настройки шрифтов и цветов
+// Fonts and colours
 #let main-font = "Segoe UI"
-#let chord-color = blue.darken(30%)  // Цвет аккордов
+#let chord-color = blue.darken(30%)  // chord highlight colour
 #let text-color = black
 #let bg-color = white
 
-// Размеры
-#let cover-size = 2.5cm  // Размер квадратного фото песни
-#let author-icon-size = 0.8cm  // Размер иконки автора
+// Sizes
+#let cover-size = 2.5cm        // song cover image (square)
+#let author-icon-size = 0.8cm  // author avatar in header
 
 // Per-language overrides — any key here shadows the global default in template.typ
 // Supported keys: lyrics-label, music-label, author (default music author name)

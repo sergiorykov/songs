@@ -1,7 +1,7 @@
 // template.typ
 #import "settings.typ": author, author-photo, album, album-year, main-font, chord-color, text-color, cover-size, author-icon-size, lang-settings
 
-// Подсвечиваем аккорды: латинские A-G с модификаторами (русские тексты — кириллица, не пересекается)
+// Highlight chords: Latin A-G with modifiers (Cyrillic lyrics don't overlap)
 #let chord-show = it => text(weight: "bold", fill: chord-color, font: "Courier New", size: 0.9em, it)
 
 #let song-template(
@@ -38,10 +38,10 @@
   set text(font: main-font, size: 11pt, fill: text-color, lang: language)
   set par(leading: 0.55em, spacing: 1em)
 
-  // Подсветка аккордов через show rule (работает по всему документу)
+  // Apply chord highlighting via show rule (document-wide)
   show regex("\\b[A-G][#b]?m?(maj7|min7|7|dim7|dim|aug|sus4|sus2|add9)?(/[A-G][#b]?)?\\b"): chord-show
 
-  // ── Шапка ──────────────────────────────────────────────────────
+  // ── Header ──────────────────────────────────────────────────────
   block(
     width: 100%,
     inset: (bottom: 0.4cm),
@@ -62,7 +62,7 @@
 
   v(0.3cm)
 
-  // ── Заголовок + обложка + авторство ────────────────────────────
+  // ── Title + cover + credits ─────────────────────────────────────
   grid(
     columns: (cover-size, 1fr),
     gutter: 0.5cm,
@@ -90,17 +90,17 @@
 
   v(0.5cm)
 
-  // ── Каподастр перед текстом ─────────────────────────────────────
+  // ── Capo indicator ──────────────────────────────────────────────
   if capo != none {
     block(inset: (bottom: 0.3cm))[
       #text(size: 9pt, fill: luma(110), style: "italic")[Capo +#capo]
     ]
   }
 
-  // ── Текст песни ────────────────────────────────────────────────
+  // ── Song body ───────────────────────────────────────────────────
   body
 
-  // ── Подвал ─────────────────────────────────────────────────────
+  // ── Footer ──────────────────────────────────────────────────────
   v(1fr)
   block(
     width: 100%,

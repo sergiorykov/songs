@@ -69,5 +69,5 @@ When adding a new song:
 - All scripts are written in **Python** (not PowerShell or Bash)
 - Console output must be **visually polished**: use ANSI colours, bold/dim text, clear structure — similar to Claude Code's UI style
 - Interactive selectors use arrow-key navigation: `msvcrt` on Windows, `tty`/`termios` on Unix — single unified `pick_song()`, no separate fallback function
-- All code, comments, variable names, and docstrings are in **English**
+- All code, comments, variable names, and docstrings are in **English** — this applies to `.typ`, `.py`, `.html`, `.yml`, and all other source files
 - Print the full shell command before running it (e.g. the full `typst compile ...` invocation)

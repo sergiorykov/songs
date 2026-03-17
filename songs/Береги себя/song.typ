@@ -1,5 +1,5 @@
 // Per-language configuration for "Береги себя".
-// Each key is a language code matching the .typ filename.
+// Each key is a language code that matches the corresponding .typ filename.
 
 #let variants = (
   ru: (
