@@ -1,5 +1,5 @@
 // template.typ
-#import "settings.typ": *
+#import "settings.typ": author, author-photo, album, album-year, main-font, chord-color, text-color, cover-size, author-icon-size, lang-settings
 
 // Подсвечиваем аккорды: латинские A-G с модификаторами (русские тексты — кириллица, не пересекается)
 #let chord-show = it => text(weight: "bold", fill: chord-color, font: "Courier New", size: 0.9em, it)
@@ -10,17 +10,26 @@
   capo: none,
   soundcloud: none,
   language: "en",
+  default: false,   // used by update_songs.py; ignored here
   // Lyrics credits
   lyrics-author: none,
   lyrics-author-url: none,
   lyrics-date: none,
   lyrics-sources: (),   // array of ("Label", "url") pairs
   // Music credits
-  music-author: author,
+  music-author: none,   // if none, resolved from lang-settings or global author
   music-author-url: none,
   music-date: none,
   body,
 ) = {
+  // Resolve per-language overrides from settings
+  let ls             = lang-settings.at(language, default: (:))
+  let lyrics-label   = ls.at("lyrics-label", default: "Lyrics")
+  let music-label    = ls.at("music-label",  default: "Music")
+  let eff-music-author = if music-author != none { music-author } else {
+    ls.at("author", default: author)
+  }
+
   set page(
     paper: "a5",
     margin: (x: 1.2cm, y: 1cm),
@@ -64,17 +73,17 @@
       #v(0.1cm)
       #set text(size: 8pt, fill: luma(130), style: "italic")
       #if lyrics-author != none [
-        Стихи: #if lyrics-author-url != none [
+        #lyrics-label: #if lyrics-author-url != none [
           #link(lyrics-author-url)[#lyrics-author]
         ] else [
           #lyrics-author
         ]#if lyrics-date != none [ · #lyrics-date]#for s in lyrics-sources [ · #link(s.at(1))[#s.at(0)]]
         \
       ]
-      Музыка: #if music-author-url != none [
-        #link(music-author-url)[#music-author]
+      #music-label: #if music-author-url != none [
+        #link(music-author-url)[#eff-music-author]
       ] else [
-        #music-author
+        #eff-music-author
       ]#if music-date != none [ · #music-date]
     ],
   )

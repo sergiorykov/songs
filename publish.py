@@ -195,8 +195,9 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     cmd = ["typst", "compile", "--root", str(root), str(song_file), str(output_file)]
-    print(c("  Compiling", BOLD) + c(f"  {' '.join(cmd)}", DIM))
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    cmd_str = " ".join(f'"{a}"' if " " in a else a for a in cmd)
+    print(c("  Compiling", BOLD) + c(f"  {cmd_str}", DIM))
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
 
     if result.returncode == 0:
         print(c(f"  ✓ Done: {output_file}", GREEN, BOLD))

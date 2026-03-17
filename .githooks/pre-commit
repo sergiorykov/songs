@@ -6,6 +6,11 @@
 set -e
 ROOT="$(git rev-parse --show-toplevel)"
 
+# ── 0. Show what is staged ────────────────────────────────────────────────────
+echo "Staged changes:"
+git diff --cached --name-status | sed 's/^/  /'
+echo ""
+
 # ── 1. Compile PDFs for staged or modified lang .typ files ───────────────────
 if ! command -v typst &>/dev/null; then
   echo "warning: typst not found, skipping PDF compilation" >&2

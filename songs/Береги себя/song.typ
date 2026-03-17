@@ -4,6 +4,7 @@
 #let variants = (
   ru: (
     language: "ru",
+    default: true,
     title: "Береги себя",
     cover-image: "/songs/Береги себя/cover.png",
     capo: "4",
@@ -17,6 +18,21 @@
     ),
     music-date: "22.03.2024",
     music-author: "Сергей Рыков",
+    music-author-url: "https://soundcloud.com/sergiorykov/",
+  ),
+  en: (
+    language: "en",
+    default: false,
+    title: "Take Care of Yourself",
+    cover-image: "/songs/Береги себя/cover.png",
+    capo: "4",
+    soundcloud: "https://soundcloud.com/sergiorykov/beregi-sebya",
+    lyrics-author: "Tanya Pelikhovskaya",
+    lyrics-author-url: "https://www.chitalnya.ru/users/Einsamer2/info.php",
+    lyrics-date: none,
+    lyrics-sources: (),
+    music-date: "22.03.2024",
+    music-author: "Sergey Rykov",
     music-author-url: "https://soundcloud.com/sergiorykov/",
   ),
 )

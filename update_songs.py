@@ -42,6 +42,11 @@ def _str(text: str, key: str) -> str | None:
     return m.group(1) if m else None
 
 
+def _bool(text: str, key: str) -> bool:
+    m = re.search(rf'{re.escape(key)}:\s*(true|false)', text)
+    return m.group(1) == "true" if m else False
+
+
 def extract_lyrics(lang_file: Path) -> str:
     """Return song lyrics from a lang .typ file, stripping chords and typst markup."""
     text = lang_file.read_text(encoding="utf-8")
@@ -72,6 +77,7 @@ def parse_variant_block(block: str) -> dict:
     """Parse string fields from a single variant block of song.typ."""
     return {
         "title":             _str(block, "title"),
+        "default":           _bool(block, "default"),
         "soundcloud":        _str(block, "soundcloud"),
         "lyrics-author":     _str(block, "lyrics-author"),
         "lyrics-author-url": _str(block, "lyrics-author-url"),
@@ -132,48 +138,54 @@ def _credits_html(meta: dict) -> str:
     return f'<div class="lyrics-credits">{"  ·  ".join(parts)}</div>\n        ' if parts else ""
 
 
-def render_html_item(folder: str, variants: dict) -> str:
-    first     = next(iter(variants.values()))
-    song_name = first.get("title") or folder
+def render_html_variant(folder: str, lang: str, meta: dict, variants: dict) -> str:
+    """Render one <li> for a single language variant."""
+    song_name   = meta.get("title") or folder
+    is_default  = meta.get("default", False)
 
-    # Build per-variant action buttons
+    # PDF badge inline with title
+    pdf_href  = f"pdf/{folder}/{lang}.pdf"
+    pdf_badge = (
+        f'<a class="icon-btn lang-btn"'
+        f' href="{pdf_href}"'
+        f' target="_blank" rel="noopener"'
+        f' data-tooltip="Sheet music PDF ({lang})">{lang}</a>'
+    )
+
+    # Subtext for non-default variants: find the default title
+    original_html = ""
+    if not is_default:
+        default_meta  = next((m for m in variants.values() if m.get("default")),
+                             next(iter(variants.values())))
+        default_title = default_meta.get("title") or folder
+        original_html = f' <span class="song-original">original: {default_title}</span>'
+
+    # SoundCloud button (actions area, right side)
+    sc      = meta.get("soundcloud")
     actions = ""
-    for lang, meta in variants.items():
-        pdf_href = f"pdf/{folder}/{lang}.pdf"
-        sc = meta.get("soundcloud")
-        if sc:
-            actions += (
-                f'<a class="icon-btn sc-btn"'
-                f' href="{sc}"'
-                f' target="_blank" rel="noopener"'
-                f' data-tooltip="Listen on SoundCloud">'
-                f"{SVG_PLAY}{SVG_SC}</a>"
-            )
-        actions += (
-            f'<a class="icon-btn lang-btn"'
-            f' href="{pdf_href}"'
+    if sc:
+        actions = (
+            f'<a class="icon-btn sc-btn"'
+            f' href="{sc}"'
             f' target="_blank" rel="noopener"'
-            f' data-tooltip="Sheet music PDF ({lang})">{lang}</a>'
+            f' data-tooltip="Listen on SoundCloud">'
+            f"{SVG_PLAY}{SVG_SC}</a>"
         )
 
-    # Lyrics from all variants
-    lyrics_sections = ""
-    for lang, meta in variants.items():
-        lyr = meta.get("lyrics", "")
-        if not lyr:
-            continue
-        escaped = lyr.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-        cred = _credits_html(meta)
-        header = f'<div class="lyrics-lang">{lang}</div>' if len(variants) > 1 else ""
-        lyrics_sections += f"{header}{cred}<pre>{escaped}</pre>"
+    # Lyrics panel
+    lyr          = meta.get("lyrics", "")
+    lyrics_block = ""
+    if lyr:
+        escaped      = lyr.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        cred         = _credits_html(meta)
+        lyrics_block = f'\n        <div class="lyrics">{cred}<pre>{escaped}</pre></div>'
 
-    lyrics_block = f'\n        <div class="lyrics">{lyrics_sections}</div>' if lyrics_sections else ""
-
+    data_default = "true" if is_default else "false"
     return (
-        f"      <li>\n"
+        f'      <li data-lang="{lang}" data-default="{data_default}">\n'
         f'        <details class="song-details">\n'
         f'          <summary class="song-row">\n'
-        f'            <span class="song-title">{song_name}</span>\n'
+        f'            <span class="song-title">{song_name}{pdf_badge}{original_html}</span>\n'
         f'            <div class="song-actions">{actions}</div>\n'
         f"          </summary>"
         f"{lyrics_block}\n"
@@ -183,8 +195,13 @@ def render_html_item(folder: str, variants: dict) -> str:
 
 
 def update_html(songs: list[tuple[str, dict]]) -> bool:
-    text = INDEX_HTML.read_text(encoding="utf-8")
-    inner = "\n".join(render_html_item(folder, variants) for folder, variants in songs)
+    text  = INDEX_HTML.read_text(encoding="utf-8")
+    items = [
+        render_html_variant(folder, lang, meta, variants)
+        for folder, variants in songs
+        for lang, meta in variants.items()
+    ]
+    inner     = "\n".join(items)
     new_block = f"      <!-- songs:start -->\n{inner}\n      <!-- songs:end -->"
     updated = re.sub(
         r"      <!-- songs:start -->.*?      <!-- songs:end -->",
