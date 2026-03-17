@@ -93,18 +93,53 @@
       opacity: 0.6;
     }
 
+    /* ── Author ── */
+    .author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .author img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      filter: grayscale(30%);
+    }
+
+    .author-name {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
     /* ── Footer ── */
     footer {
       margin-top: 4rem;
       font-size: 0.75rem;
-      color: var(--border);
+      color: var(--muted);
       letter-spacing: 0.05em;
+    }
+
+    footer a {
+      color: var(--muted);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    footer a:hover {
+      color: var(--accent);
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
+      <div class="author">
+        <img src="images/author-photo.jpg" alt="Sergio Rykov" />
+        <span class="author-name">Sergio Rykov</span>
+      </div>
       <h1>songs</h1>
       <p>Indie songs — lyrics, chords, and lead sheets.<br>PDFs typeset with Typst.</p>
     </header>
@@ -118,7 +153,9 @@
       </li>
     </ul>
 
-    <footer>CC BY 4.0</footer>
+    <footer>
+      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+    </footer>
   </div>
 </body>
 </html>
