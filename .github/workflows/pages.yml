@@ -22,20 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install typst
-        run: |
-          curl -fsSL https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz \
-            | tar -xJ --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
-
-      - name: Compile all songs to PDF
-        run: |
-          mkdir -p pdf
-          for f in songs/*.typ; do
-            name=$(basename "$f" .typ)
-            typst compile --root . "$f" "pdf/${name}.pdf"
-          done
-
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

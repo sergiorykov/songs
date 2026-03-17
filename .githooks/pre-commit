@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Before every commit:
+#   1. Compile changed (or new) songs to PDF via typst
+#   2. Sync song list in index.html and README.md
+
+set -e
+ROOT="$(git rev-parse --show-toplevel)"
+
+# ── 1. Compile PDFs for staged or modified .typ files ────────────────────────
+if ! command -v typst &>/dev/null; then
+  echo "warning: typst not found, skipping PDF compilation" >&2
+else
+  mkdir -p "$ROOT/pdf"
+
+  # Collect .typ files that are staged or have changes
+  CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep '^songs/.*\.typ$' || true)
+  # Also include template/settings changes — recompile everything
+  SETTINGS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^(template|settings)\.typ$' || true)
+
+  if [ -n "$SETTINGS" ]; then
+    # Settings changed — recompile all songs
+    for f in "$ROOT"/songs/*.typ; do
+      name=$(basename "$f" .typ)
+      echo "  compile: $name"
+      typst compile --root "$ROOT" "$f" "$ROOT/pdf/${name}.pdf"
+    done
+  elif [ -n "$CHANGED" ]; then
+    while IFS= read -r rel; do
+      f="$ROOT/$rel"
+      name=$(basename "$f" .typ)
+      echo "  compile: $name"
+      typst compile --root "$ROOT" "$f" "$ROOT/pdf/${name}.pdf"
+    done <<< "$CHANGED"
+  fi
+
+  git add "$ROOT/pdf/"
+fi
+
+# ── 2. Sync index.html and README.md ─────────────────────────────────────────
+python "$ROOT/update_songs.py" || exit 1
+git add "$ROOT/index.html" "$ROOT/README.md"
