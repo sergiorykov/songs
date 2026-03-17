@@ -1,6 +1,5 @@
 // Per-language configuration for "Береги себя".
-// Keys in `about` are shared; each entry in `languages` overrides individual keys.
-// Usage in lang files: #show: song-template.with(..variant("ru"))
+// Usage in lang files: #show: song-template.with(..languages.ru)
 
 #import "../../albums/Тишина/album.typ": album as _album
 
@@ -19,31 +18,25 @@
 )
 
 #let languages = (
-  ru: (
-    title:            "Береги себя",
-    music-author:     "Сергей Рыков",
-    lyrics-author:    "Таня Пелиховская",
+  ru: about + (
+    language:          "ru",
+    title:             "Береги себя",
+    music-author:      "Сергей Рыков",
+    lyrics-author:     "Таня Пелиховская",
     lyrics-author-url: "https://www.chitalnya.ru/users/Einsamer2/info.php",
-    lyrics-date:      none,
+    lyrics-date:       none,
     lyrics-sources: (
       ("текст fb", "https://www.facebook.com/story.php/?story_fbid=317692863917323&id=100070298352633&paipv=0&eav=AfZ-taNTFgh0iZEcLmdUgs-NpnB_-6hxpCRCUIM1Phy_2jGI49Kuq2VZfME3qsrILAw&_rdr"),
       ("текст tg", "https://t.me/klub_ratnikov/3006"),
     ),
   ),
-  en: (
-    title:            "Take Care of Yourself",
-    music-author:     "Sergey Rykov",
-    lyrics-author:    "Tanya Pelikhovskaya",
+  en: about + (
+    language:          "en",
+    title:             "Take Care of Yourself",
+    music-author:      "Sergey Rykov",
+    lyrics-author:     "Tanya Pelikhovskaya",
     lyrics-author-url: "https://www.chitalnya.ru/users/Einsamer2/info.php",
-    lyrics-date:      none,
-    lyrics-sources:   (),
+    lyrics-date:       none,
+    lyrics-sources:    (),
   ),
 )
-
-// Merge about + language overrides; inject language code from key name
-#let variant(lang) = {
-  let result = about
-  result.insert("language", lang)
-  for (k, v) in languages.at(lang) { result.insert(k, v) }
-  result
-}

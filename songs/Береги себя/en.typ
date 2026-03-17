@@ -1,7 +1,7 @@
-#import "song.typ": variant
+#import "song.typ": languages
 #import "../../template.typ": song-template
 
-#show: song-template.with(..variant("en"))
+#show: song-template.with(..languages.en)
 
 F            Em        Am \
 Take care of yourself, do you hear?...

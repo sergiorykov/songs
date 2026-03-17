@@ -1,6 +1,5 @@
 // Per-language configuration for "Кукла Маша".
-// Keys in `about` are shared; each entry in `languages` overrides individual keys.
-// Usage in lang files: #show: song-template.with(..variant("ru"))
+// Usage in lang files: #show: song-template.with(..languages.ru)
 
 #import "../../albums/Кукла Маша/album.typ": album as _album
 
@@ -17,22 +16,15 @@
 )
 
 #let languages = (
-  ru: (
-    title:        "Кукла Маша",
-    lyrics-author:    "Сергей Рыков",
+  ru: about + (
+    language:          "ru",
+    title:             "Кукла Маша",
+    lyrics-author:     "Сергей Рыков",
     lyrics-author-url: "https://soundcloud.com/sergiorykov/",
-    lyrics-date:      "01.07.2016",
-    lyrics-sources:   (),
-    music-author: "Сергей Рыков",
-    music-author-url: "https://soundcloud.com/sergiorykov/",
-    music-date:       "01.07.2016",
+    lyrics-date:       "01.07.2016",
+    lyrics-sources:    (),
+    music-author:      "Сергей Рыков",
+    music-author-url:  "https://soundcloud.com/sergiorykov/",
+    music-date:        "01.07.2016",
   ),
 )
-
-// Merge about + language overrides; inject language code from key name
-#let variant(lang) = {
-  let result = about
-  result.insert("language", lang)
-  for (k, v) in languages.at(lang) { result.insert(k, v) }
-  result
-}

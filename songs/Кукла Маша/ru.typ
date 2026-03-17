@@ -1,6 +1,6 @@
-#import "song.typ": variant
+#import "song.typ": languages
 #import "../../template.typ": song-template
-#show: song-template.with(..variant("ru"))
+#show: song-template.with(..languages.ru)
 
 Am Em Em Am \
 

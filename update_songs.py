@@ -129,7 +129,7 @@ def parse_song_dir(song_dir: Path) -> dict:
                 _extract_block(config_text, "variants") or ""
 
     variants = {}
-    for m in re.finditer(r'^\s{2}(\w+):\s*\((.*?)\n\s{2}\),', container, re.MULTILINE | re.DOTALL):
+    for m in re.finditer(r'^\s{2}(\w+):\s*(?:\w+\s*\+\s*)?\((.*?)\n\s{2}\),', container, re.MULTILINE | re.DOTALL):
         lang      = m.group(1)
         lang_meta = parse_block(m.group(2))
         # Language keys override about keys; None values don't clobber
