@@ -64,6 +64,12 @@ When adding a new song:
 3. Add a `<li>` entry to `index.html` (PDF link + SC button if available)
 4. CI compiles and commits the PDF automatically
 
+## Committing
+
+Before every commit, run `git status` and review **both** what you changed and what the user may have changed manually (new files, edited assets, etc.). Stage everything that belongs to the commit — never leave user changes untracked.
+
+If it is unclear what the user changed or why, **ask before committing** rather than guessing or silently skipping their files.
+
 ## Scripts
 
 - All scripts are written in **Python** (not PowerShell or Bash)
