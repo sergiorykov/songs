@@ -268,6 +268,31 @@
     }
 
     footer a:hover { color: var(--accent); }
+
+    .footer-made {
+      margin-top: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .footer-tool {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      text-decoration: none;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.15em 0.5em;
+      font-size: 0.7rem;
+      font-family: sans-serif;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .footer-tool:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+
+    .footer-sep { opacity: 0.3; }
   </style>
 </head>
 <body>
@@ -300,7 +325,7 @@
         </nav>
       </div>
       <h1>songs</h1>
-      <p>Indie songs — lyrics, chords, and lead sheets.<br>PDFs typeset with Typst.</p>
+      <p>Indie songs — lyrics, chords, and lead sheets.</p>
     </header>
 
     <ul class="songs">
@@ -337,7 +362,23 @@
     </ul>
 
     <footer>
-      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+      <div>
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+      </div>
+      <div class="footer-made">
+        Made with ❤️ using
+        <!-- Claude Code -->
+        <a href="https://claude.ai/code" target="_blank" rel="noopener" class="footer-tool">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12l3 3 5-5"/></svg>
+          Claude Code
+        </a>
+        <span class="footer-sep">·</span>
+        <!-- Typst -->
+        <a href="https://typst.app" target="_blank" rel="noopener" class="footer-tool">
+          <svg width="14" height="14" viewBox="0 0 120 120" fill="currentColor" aria-hidden="true"><path d="M60 10 L110 95 H10 Z"/></svg>
+          Typst
+        </a>
+      </div>
     </footer>
   </div>
 </body>
