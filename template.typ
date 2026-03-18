@@ -43,9 +43,30 @@
     default: if _ra != none { _ra.album } else { ls.at("album", default: album) })
   let eff-album-year = if _ra != none { _ra.album-year } else { album-year }
 
+  let _header-color = luma(150)
+  let _photo-size   = 0.5cm
+
   set page(
     paper: "a5",
-    margin: (x: 1.2cm, y: 1cm),
+    margin: (x: 1.2cm, top: 1.5cm, bottom: 1cm),
+    header: {
+      set text(font: main-font, size: 7.5pt, fill: _header-color)
+      grid(
+        columns: (1fr, auto, 1fr),
+        align: (left + horizon, center + horizon, right + horizon),
+        [#eff-album · #eff-album-year],
+        title,
+        grid(
+          columns: (auto, auto),
+          column-gutter: 0.2em,
+          align: horizon,
+          box(width: _photo-size, height: _photo-size, radius: 50%, clip: true,
+            image(author-photo, width: _photo-size, height: _photo-size, fit: "cover")),
+          eff-music-author,
+        ),
+      )
+      line(length: 100%, stroke: 0.5pt + _header-color)
+    },
   )
 
   set text(font: main-font, size: 11pt, fill: text-color, lang: language)
@@ -54,38 +75,17 @@
   // Apply chord highlighting via show rule (document-wide)
   show regex("\\b[A-G][#b]?m?(maj7|min7|7|dim7|dim|aug|sus4|sus2|add9)?(/[A-G][#b]?)?\\b"): chord-show
 
-  // ── Header ──────────────────────────────────────────────────────
-  block(
-    width: 100%,
-    inset: (bottom: 0.4cm),
-    stroke: (bottom: 0.5pt + luma(200)),
-  )[
-    #grid(
-      columns: (auto, 1fr, auto),
-      gutter: 0.4cm,
-      align: horizon,
-      box(width: author-icon-size, height: author-icon-size, radius: 50%, clip: true,
-        image(author-photo, width: author-icon-size, height: author-icon-size, fit: "cover")),
-      [
-        #text(weight: "bold", author) \
-        #text(size: 9pt, style: "italic", fill: luma(130))[#eff-album · #eff-album-year]
-      ],
-      [],
-    )
-  ]
-
-  v(0.3cm)
-
   // ── Title + cover + credits ─────────────────────────────────────
   grid(
     columns: (cover-size, 1fr),
-    gutter: 0.5cm,
-    align: horizon,
+    gutter: 0.4cm,
+    align: top,
     image(cover-image, width: cover-size, height: cover-size, fit: "cover"),
-    block(inset: (top: 0pt))[
-      #text(size: 17pt, weight: "bold", title)
-      #v(0.1cm)
-      #set text(size: 8pt, fill: luma(130), style: "italic")
+    block(inset: 0pt)[
+      #set par(leading: 0.3em, spacing: 0.35em)
+      #text(size: 13pt, weight: "bold", title)
+      \
+      #set text(size: 7pt, fill: luma(130), style: "italic")
       #if lyrics-author != none [
         #lyrics-label: #if lyrics-author-url != none [
           #link(lyrics-author-url)[#lyrics-author]
@@ -113,23 +113,4 @@
 
   // ── Song body ───────────────────────────────────────────────────
   body
-
-  // ── Footer ──────────────────────────────────────────────────────
-  v(1fr)
-  block(
-    width: 100%,
-    inset: (top: 0.3cm),
-    stroke: (top: 0.5pt + luma(200)),
-  )[
-    #set align(center)
-    #if soundcloud != none [
-      #link(soundcloud)[
-        #text(size: 8pt, fill: rgb("#ff5500"))[SoundCloud ↗]
-      ]
-      #h(0.5em)
-      #text(size: 8pt, fill: luma(200))[·]
-      #h(0.5em)
-    ]
-    #text(size: 8pt, fill: luma(150))[#eff-album · #eff-album-year]
-  ]
 }

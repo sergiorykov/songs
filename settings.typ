@@ -14,7 +14,7 @@
 #let bg-color = white
 
 // Sizes
-#let cover-size = 2.5cm        // song cover image (square)
+#let cover-size = 1.25cm       // song cover image (square)
 #let author-icon-size = 0.8cm  // author avatar in header
 
 // Per-language overrides — any key here shadows the global default in template.typ
